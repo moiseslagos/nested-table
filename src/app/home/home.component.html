@@ -1,0 +1,61 @@
+
+<div class="row">
+  <div class="col-md-12 mx-auto mb-3">
+    <div class="md-form">
+      <input type="text" [formControl]="searchText" class="form-control" id="search" placeholder="Búsqueda"/>
+    </div>
+  </div>
+</div>
+<div class="">
+  <table class="table table-hover table-bordered align-middle">
+    <thead>
+      <tr>
+        <th></th>
+        <th resizable>Name</th>
+        <th resizable>type</th>
+        <th resizable>email</th>
+        <th resizable>Phone</th>
+        <th resizable>Company</th>
+        <th resizable>Address</th>
+        <th resizable>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let item of data; let i = index; let last = last">
+        <ng-template *ngTemplateOutlet="items; context:{ $implicit:item, i:i, nivel:0 }"></ng-template>
+      </ng-container>   
+    </tbody>
+  </table>
+</div>
+
+
+<ng-template #items let-item let-i="i" let-nivel="nivel">
+  <tr (mouseover)="item.showAction = true" (mouseleave)="item.showAction=false"  [ngStyle]="{ 'background-color': 'hsl(0, 0%, '+( 100 - (nivel*10) )+'%)' }">
+    <td>
+      <a href="javascript:void(0)" (click)="item.expandChildren = !item.expandChildren" *ngIf="item.children?.length">
+        <i class="fa fa-caret-down text-body" [ngClass]="item.expandChildren ? 'fa-caret-up' : 'fa-caret-down'"></i>
+      </a>
+    </td>
+    <td>
+      <a href="javascript:void(0)" (click)="item.expandChildren = !item.expandChildren">
+        {{item.name}}
+      </a>
+    </td>    
+    <td>{{item.type}}</td>
+    <td>{{item.email}}</td>
+    <td>{{item.phoneNo}}</td>
+    <td>{{nivel}}</td>
+    <td>{{item.address}}</td>
+    <td>
+      <div class="btn-group" role="group" aria-label="Basic example" [ngClass]="item.showAction ? 'opacity-100' : 'opacity-0'">
+        <button type="button" class="btn btn-primary" *ngIf="nivel == 0"><i class="fa fa-pencil"></i></button>
+        <button type="button" class="btn btn-primary" *ngIf="nivel < 2"><i class="fa fa-trash"></i></button>
+      </div>
+    </td>
+  </tr>
+  <ng-container *ngIf="item.children?.length && item.expandChildren">
+    <ng-container *ngFor="let child of item.children; let i_child = index">
+      <ng-template *ngTemplateOutlet="items; context:{$implicit:child, parent: item, i:i_child, nivel:nivel+1}"></ng-template>
+    </ng-container> 
+  </ng-container>  
+</ng-template>
